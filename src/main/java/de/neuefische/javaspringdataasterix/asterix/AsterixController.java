@@ -1,6 +1,6 @@
 package de.neuefische.javaspringdataasterix.asterix;
 
-import org.springframework.data.domain.Example;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -42,5 +42,15 @@ public class AsterixController {
             characterRepository.deleteById(id);
         }
         throw new NoSuchElementException("Character with id: " + id + " does not exist.");
+    }
+
+    @GetMapping("/api/asterix/characters/average-age")
+    public Double getAverageAge(@RequestParam(required = false) String profession) {
+        return characterRepository.findAll()
+                .stream()
+                .filter(character -> profession == null || profession.equals(character.profession()))
+                .mapToDouble(Character::age)
+                .average()
+                .orElse(0);
     }
 }
